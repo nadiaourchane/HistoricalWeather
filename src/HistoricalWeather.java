@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class HistoricalWeather {
-    static ArrayList<String> ValidCities = new ArrayList<String>(Arrays.asList("mia", "jnu", "bos"));
+    static ArrayList<String> ValidCities = new ArrayList<String>(Arrays.asList("Miami", "Juneau", "Boston"));
     static ArrayList<String> Name = new ArrayList<String>();
     static ArrayList<String> Date = new ArrayList<String>();
     static ArrayList<String> Prcp = new ArrayList<String>();
@@ -38,7 +38,6 @@ public class HistoricalWeather {
                 Tmin.add(splitLine[TMIN_INDEX]);
             }
 
-            // Depending on how many arguments are entered, run a specific program
             if (args.length < 1) {
                 throw new Exception("No function name provided. Please provide 'days-of-precip' or 'max-temp-delta'.");
             }
@@ -51,11 +50,16 @@ public class HistoricalWeather {
 
             if (functionName.equals("days-of-precip")) {
                 float days_of_precip = daysOfPrecip(city);
-                System.out.print("Days of precipitation in " + city + " = " + days_of_precip);
+                System.out.print("Average days of precipitation per year in " + city + " = " + days_of_precip);
             }
             else if (functionName.equals("max-temp-delta")) {
-                int year = (args[2] == null) ? 0 : Integer.parseInt(args[2]);
-                int month = (args[3] == null) ? 0 : Integer.parseInt(args[3]);
+                int year = (args.length <= 2) ? 0 : Integer.parseInt(args[2]);
+                int month = (args.length <= 3) ? 0 : Integer.parseInt(args[3]);
+
+                if (year == 0 && month != 0) { throw new Exception("Year must be provided with month for max-temp-delta."); }
+                if (year != 0 && (year > 2019 || year < 2010))  { throw new Exception("Year must be between 2010 and 2019."); }
+                if (month != 0 && (month > 12 || month < 1))  { throw new Exception("Month must be between 1 and 12."); }
+
                 String max_temp_delta = maxTempDelta(city, year, month);
                 System.out.print(max_temp_delta);
             }
@@ -80,7 +84,7 @@ public class HistoricalWeather {
         int currYear = 0;
         for (int i = 1; i < Name.size(); i++) {
             // Check if we are looking at the city requested
-            if (Name.get(i).toLowerCase().contains(city)) {
+            if (Name.get(i).toLowerCase().contains(city.toLowerCase())) {
                 // Convert date format to Calendar to get Year
                 Calendar currDate = convertToCalendar(Date.get(i));
                 currYear = currDate.get(Calendar.YEAR);
@@ -117,7 +121,7 @@ public class HistoricalWeather {
         // i starts at 1 to account for Headers/Column names in Array List
         for (int i = 1; i < Name.size(); i++) {
             // Check if we are looking at the city requested
-            if (Name.get(i).toLowerCase().contains(city)) {
+            if (Name.get(i).toLowerCase().contains(city.toLowerCase())) {
                 // Convert date format to Calendar to get Year
                 Calendar currDate = convertToCalendar(Date.get(i));
                 
@@ -149,7 +153,7 @@ public class HistoricalWeather {
         }
 
         // Return expected values in a string
-        return "Highest temperature change in " + city + " = " + String.valueOf(deltaMax) + " celcius on " + maxDeltaDate.toString();
+        return "Highest temperature change in " + city + " for provided date range = " + String.valueOf(deltaMax) + " Celcius on " + maxDeltaDate;
     }
 
     public static Calendar convertToCalendar(String currDate) {
@@ -164,10 +168,12 @@ public class HistoricalWeather {
     }
 
     public static String convertCity(String city) {
-        // If "JNU" is input city, change city variable so searching can be done using .contains()
-        city = city.toLowerCase();
-        if (city.equals("jnu"))
-            city = "jun";
+        if (city.equals("mia"))
+            city = "Miami";
+        else if (city.equals("jnu"))
+            city = "Juneau";
+        else if (city.equals("bos"))
+            city = "Boston";
 
         return city;
     }
