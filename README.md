@@ -2,7 +2,8 @@
 NOAA Data - Precipitation and Temperature Change
 
 ## How To Run
-`java HistoricalWeather.java "days-of-precip" "mia"`
+`java HistoricalWeather.java "function-name" "city" "year (not required)" "month (not required)"`
+i.e. `java HistoricalWeather.java "days-of-precip" "mia"`; `java HistoricalWeather.java "max-temp-delta" "bos" "2014" "7"` 
 
 ## Assumptions
 - "days-of-precip" function was written to determine what the average days of precipitation per year PER city is; it will not output the city with the most precip as the project description (mistakenly?) describes in the prompt
